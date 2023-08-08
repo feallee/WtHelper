@@ -13,7 +13,7 @@
  * 共用转换表：支持。
  *
  * 注意事项
- * 1、为了避免内存泄漏，不再使用的状态机请调用函数mealy_delete删除并释放状态机所占用资源。
+ * 1、为了避免内存泄漏，不再使用的状态机请调用函数wt_mealy_delete删除并释放状态机所占用资源。
  * 2、在多任务中函数mealy_raise是不安全的。
  *
  * 修订日志
@@ -27,7 +27,7 @@
 #define __WT_MEALY_H__
 
  /// @brief 未知状态。注意：该状态不允许在状态转换表中使用。
-#define MEALY_STATE_UNKNOWN	(-1)
+#define WT_MEALY_STATE_UNKNOWN	(-1)
 
 /// @brief 状态转换控制块。
 typedef struct
@@ -40,10 +40,10 @@ typedef struct
 	char next;
 	/// @brief 与当前状态关联动作，在转换状态后调用。注意：实现动作时不允许调用下列函数：mealy_create，mealy_delete和mealy_raise。
 	void(*action)(void* parameter);
-} mealy_transit_t;
+} wt_mealy_transit_t;
 
 /// @brief 状态机控制块。
-typedef void* mealy_t;
+typedef void* wt_mealy_t;
 
 /// @brief 创建新的状态机。
 /// @param transitTable 状态转换表。
@@ -57,22 +57,22 @@ typedef void* mealy_t;
 ///		4、参数finalState为MEALY_STATE_UNKNOWN；
 ///		5、参数transitTable为NULL。
 ///		会导致创建失败，返回NULL。
-mealy_t mealy_create(const mealy_transit_t* transitTable, unsigned short transitCount, char initialState, char finalState);
+wt_mealy_t wt_mealy_create(const wt_mealy_transit_t* transitTable, unsigned short transitCount, char initialState, char finalState);
 
 /// @brief 向状态机引发事件并返回状态转换后的状态。
 /// @param mealy 状态机。
 /// @param event 事件。
 /// @param parameter 事件关联参数。
 /// @return 返回状态转换后的状态，可以与finalState比较，判断状态机是否进入了停机状态。如果返回MEALY_STATE_UNKNOWN表示当前状态不支持该事件。
-char mealy_raise(mealy_t mealy, char event, void* parameter);
+char wt_mealy_raise(wt_mealy_t mealy, char event, void* parameter);
 
 /// @brief 获取状态机的当前状态。
 /// @param 状态机。
 /// @return 返回状态机的当前状态，可以与finalState比较，判断状态机是否进入了停机状态。
-char mealy_get_current(mealy_t mealy);
+char wt_mealy_getcurrent(wt_mealy_t mealy);
 
 /// @brief 删除并释放状态机所占用资源。
 /// @param 状态机。
-void mealy_delete(mealy_t mealy);
+void wt_mealy_delete(wt_mealy_t mealy);
 #endif // !__MEALY_H__
 

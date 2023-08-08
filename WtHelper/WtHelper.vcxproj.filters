@@ -18,9 +18,6 @@
     <ClInclude Include="wt_mealy.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="wt_slink.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="wt_queue.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -29,10 +26,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="mealy.c">
+    <ClCompile Include="wt_mealy.c">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="test.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="wt_queue.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="wt_buffer.c">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
