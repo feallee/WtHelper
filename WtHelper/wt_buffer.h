@@ -35,7 +35,7 @@ typedef enum
 }wt_buffer_state;
 
 /// @brief 创建一个缓冲区。
-/// @param queue 缓冲区容量，值域：[1,32768]。建议取4的倍数。
+/// @param capacity 缓冲区容量，值域：[1,32768]。建议取4的倍数。
 /// @return 返回创建的缓冲区。如果返回NULL，表示创建失败。
 wt_buffer_t wt_buffer_create(unsigned short  capacity);
 

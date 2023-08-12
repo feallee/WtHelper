@@ -1,5 +1,5 @@
-#include "wt_mealy.h"
 #include <stdlib.h>
+#include "wt_mealy.h"
 
 typedef struct
 {

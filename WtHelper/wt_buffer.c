@@ -2,7 +2,7 @@
 #include <assert.h>
 #include "wt_buffer.h"
 
-typedef struct 
+typedef struct
 {
 	unsigned char* buffer;
 	unsigned short read_mirror : 1;
