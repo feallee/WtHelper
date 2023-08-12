@@ -35,7 +35,7 @@ int wt_queue_enqueue(wt_queue_t queue, size_t data);
 
 /// @brief 移除并返回位于队列开始处的数据。
 /// @param queue 队列。
-/// @param data 数据。
+/// @param data [out]数据。
 /// @return 返回队列开始处数据的数量。如果为0，表示队列为空。
 int wt_queue_dequeue(wt_queue_t queue, size_t* data);
 
