@@ -2,7 +2,7 @@
 #include <assert.h>
 #include "wt_buffer.h"
 
-typedef struct
+typedef struct 
 {
 	unsigned char* buffer;
 	unsigned short read_mirror : 1;
@@ -10,13 +10,13 @@ typedef struct
 	unsigned short write_mirror : 1;
 	unsigned short write_index : 15;
 	unsigned short capacity;
-}container;
+}Buffer;
 
 wt_buffer_t wt_buffer_create(unsigned short capacity)
 {
-	container* r;
+	Buffer* r;
 	assert(capacity > 0 && capacity <= 32768);
-	r = malloc(sizeof(container));
+	r = malloc(sizeof(Buffer));
 	if (r)
 	{
 		r->buffer = malloc(capacity);
@@ -39,7 +39,7 @@ wt_buffer_t wt_buffer_create(unsigned short capacity)
 
 void wt_buffer_delete(wt_buffer_t buffer)
 {
-	container* b;
+	Buffer* b;
 	assert(buffer);
 	b = buffer;
 	free(b->buffer);
@@ -49,7 +49,7 @@ void wt_buffer_delete(wt_buffer_t buffer)
 wt_buffer_state wt_buffer_getsatate(wt_buffer_t buffer)
 {
 	wt_buffer_state r;
-	container* b;
+	Buffer* b;
 	assert(buffer);
 	b = buffer;
 	if (b->read_index == b->write_index)
@@ -73,7 +73,7 @@ wt_buffer_state wt_buffer_getsatate(wt_buffer_t buffer)
 int wt_buffer_putchar(wt_buffer_t buffer, unsigned char data)
 {
 	int r;
-	container* b;
+	Buffer* b;
 	assert(buffer);
 	b = buffer;
 	if (wt_buffer_getsatate(buffer) == WT_BUFFER_FULL)
@@ -100,7 +100,7 @@ int wt_buffer_putchar(wt_buffer_t buffer, unsigned char data)
 int wt_buffer_getchar(wt_buffer_t buffer, unsigned char* data)
 {
 	int r;
-	container* b;
+	Buffer* b;
 	assert(buffer);
 	b = buffer;
 	if (wt_buffer_getsatate(buffer) == WT_BUFFER_EMPTY)
@@ -126,7 +126,7 @@ int wt_buffer_getchar(wt_buffer_t buffer, unsigned char* data)
 
 void wt_buffer_clear(wt_buffer_t buffer)
 {
-	container* b;
+	Buffer* b;
 	assert(buffer);
 	b = buffer;
 	b->read_mirror = 0;

@@ -1,7 +1,7 @@
 /*
  * Copyright(C) 2023 We as Top team. All rights reserved.
  *
- * 本模块使用单链表实现了FIFO队列。非常适用于嵌入式应用。
+ * 本模块使用单链表实现的FIFO队列。非常适用于嵌入式应用。
  *
  * 模块规格
  * 队列容量：无限（受内存资源限制）。
