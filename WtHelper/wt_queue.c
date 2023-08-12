@@ -2,57 +2,53 @@
 #include <assert.h>
 #include "wt_queue.h"
 
-struct node {
-	void* data;
-	unsigned short length;
-	struct node* next;
-};
-
-typedef struct {
-	struct node* head;
-	struct node* tail;
-}container;
-
-static int isempty(container* c)
+typedef struct Node
 {
-	assert(c);
-	return c->head == NULL;
+	size_t data;
+	struct Node* next;
+} Node;
+
+typedef struct
+{
+	Node* front;
+	Node* rear;
+} Queue;
+
+static int isempty(Queue* queue)
+{
+	return queue->front == NULL;
 }
 
 wt_queue_t wt_queue_create(void)
 {
-	container* r;
-	r = malloc(sizeof(container));
-	if (r)
+	Queue* q = malloc(sizeof(Queue));
+	if (q)
 	{
-		r->head = NULL;
-		r->tail = NULL;
+		q->front = q->rear = NULL;
 	}
-	return r;
+	return q;
 }
 
-
-int wt_queue_enqueue(wt_queue_t queue, void* data, unsigned short length)
+int wt_queue_enqueue(wt_queue_t queue, size_t data)
 {
 	int r;
-	struct node* n;
-	assert(queue && data && length);
-	n = (struct node*)malloc(sizeof(struct node));
+	Node* n;
+	assert(queue);
+	n = malloc(sizeof(Node));
 	if (n)
 	{
-		container* c = queue;
 		n->data = data;
-		n->length = length;
 		n->next = NULL;
-		if (isempty(queue))
+		Queue* q = queue;
+		if (q->front)
 		{
-			c->head = n;
-			c->tail = n;
+			q->rear->next = n;
+			q->rear = n;
 		}
 		else
 		{
-			c->tail->next = n;
-			c->tail = n;
+			q->front = n;
+			q->rear = n;
 		}
 		r = 1;
 	}
@@ -63,69 +59,59 @@ int wt_queue_enqueue(wt_queue_t queue, void* data, unsigned short length)
 	return r;
 }
 
-unsigned short wt_queue_dequeue(wt_queue_t queue, void* data)
+int wt_queue_dequeue(wt_queue_t queue, size_t* data)
 {
-	unsigned short r;
+	int r;
 	assert(queue && data);
+	Queue* q = queue;
 
-	if (isempty(queue))
+	if (q->front)
 	{
-		r = 0;
-	}
-	else
-	{
-		container* c = queue;
-		struct node* n = c->head;
-		data = n->data;
-		r = n->length;
-		c->head = n->next;
+		Node* n = q->front;
+		*data = n->data;
+		q->front = n->next;
 		free(n);
-		if (c->head)
+		if (q->front == NULL)
 		{
-			c->tail = NULL;
+			q->rear = NULL;
 		}
-	}
-	return r;
-}
-
-unsigned short wt_queue_peek(wt_queue_t queue, void* data)
-{
-	unsigned short r;
-	assert(queue && data);
-	if (isempty(queue))
-	{
-		r = 0;
+		r = 1;
 	}
 	else
 	{
-		container* c = queue;
-		r = c->head->length;
-		data = c->head->data;
+		r = 0;
 	}
 	return r;
 }
 
-unsigned short wt_queue_count(wt_queue_t queue)
+int wt_queue_peek(wt_queue_t queue, size_t* data)
 {
-	unsigned short r = 0;
-	assert(queue);
-	container* c = queue;
-	struct node* curr = c->head;
-	while (curr != NULL) {
-		r++;
-		curr = curr->next;
+	int r;
+	assert(queue && data);
+	Queue* q = queue;
+	if (q->front)
+	{
+		*data = q->front->data;
+		r = 1;
+	}
+	else
+	{
+		r = 0;
 	}
 	return r;
 }
 
 void wt_queue_delete(wt_queue_t queue)
 {
+	Queue* q;
+	Node* n;
 	assert(queue);
-	container* c = queue;
-	struct node  n;
-	while (!isempty(c))
+	q = queue;
+	while (q->front)
 	{
-		wt_queue_dequeue(c,&n);
+		n = q->front;
+		q->front = n->next;
+		free(n);
 	}
 	free(queue);
 }

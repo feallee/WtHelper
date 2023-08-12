@@ -15,7 +15,7 @@ typedef struct
 wt_buffer_t wt_buffer_create(unsigned short capacity)
 {
 	container* r;
-	assert(capacity > 0 && capacity < 32768);
+	assert(capacity > 0 && capacity <= 32768);
 	r = malloc(sizeof(container));
 	if (r)
 	{
