@@ -8,17 +8,17 @@ typedef struct
 	unsigned short transitCount;
 	char currentState;
 	char finalState;
-}machine_t;
+}Machine;
 
 wt_mealy_t wt_mealy_create(const wt_mealy_transit_t* transitTable, unsigned short transitCount, char initialState, char finalState)
 {
-	machine_t* r;
+	Machine* r;
 	assert(transitTable &&
 		transitCount &&
 		(initialState != WT_MEALY_STATE_UNKNOWN) &&
 		(finalState != WT_MEALY_STATE_UNKNOWN));
 
-	r = malloc(sizeof(machine_t));
+	r = malloc(sizeof(Machine));
 	if (r)
 	{
 		r->transitTable = transitTable;
@@ -32,7 +32,7 @@ wt_mealy_t wt_mealy_create(const wt_mealy_transit_t* transitTable, unsigned shor
 char wt_mealy_raise(wt_mealy_t mealy, char event, size_t parameter)
 {
 	char to;
-	machine_t* m;
+	Machine* m;
 	assert(mealy &&
 		(event != WT_MEALY_STATE_UNKNOWN));
 	to = WT_MEALY_STATE_UNKNOWN;
@@ -63,7 +63,7 @@ char wt_mealy_raise(wt_mealy_t mealy, char event, size_t parameter)
 char wt_mealy_getcurrent(wt_mealy_t mealy)
 {
 	assert(mealy);
-	return ((machine_t*)mealy)->currentState;
+	return ((Machine*)mealy)->currentState;
 }
 
 void wt_mealy_delete(wt_mealy_t mealy)

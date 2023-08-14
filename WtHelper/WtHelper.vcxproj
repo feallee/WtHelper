@@ -130,12 +130,15 @@
     <ClInclude Include="wt_buffer.h" />
     <ClInclude Include="wt_mealy.h" />
     <ClInclude Include="wt_queue.h" />
+    <ClInclude Include="wt_slist.h" />
+    <ClInclude Include="wt_timer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test.c" />
     <ClCompile Include="wt_mealy.c" />
     <ClCompile Include="wt_buffer.c" />
     <ClCompile Include="wt_queue.c" />
+    <ClCompile Include="wt_timer.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,25 +1,20 @@
 #include <stdlib.h>
 #include <assert.h>
+#include "wt_slist.h"
 #include "wt_queue.h"
 
 typedef struct Node
 {
+	wt_slist_t list;
 	size_t data;
-	struct Node* next;
 } Node;
-
-typedef struct
-{
-	Node* front;
-	Node* rear;
-} Queue;
 
 wt_queue_t wt_queue_create(void)
 {
-	Queue* q = malloc(sizeof(Queue));
+	wt_queue_t q = malloc(sizeof(wt_slist_t));
 	if (q)
 	{
-		q->front = q->rear = NULL;
+		wt_slist_initialize(q);
 	}
 	return q;
 }
@@ -32,19 +27,8 @@ int wt_queue_enqueue(wt_queue_t queue, size_t data)
 	n = malloc(sizeof(Node));
 	if (n)
 	{
-		Queue* q = queue;
 		n->data = data;
-		n->next = NULL;		
-		if (q->front)
-		{
-			q->rear->next = n;
-			q->rear = n;
-		}
-		else
-		{
-			q->front = n;
-			q->rear = n;
-		}
+		wt_slist_append(queue, (wt_slist_t*)n);
 		r = 1;
 	}
 	else
@@ -57,18 +41,14 @@ int wt_queue_enqueue(wt_queue_t queue, size_t data)
 int wt_queue_dequeue(wt_queue_t queue, size_t* data)
 {
 	int r;
+	wt_slist_t* n;
 	assert(queue && data);
-	Queue* q = queue;
-	if (q->front)
+	n = wt_slist_first(queue);
+	if (n)
 	{
-		Node* n = q->front;
-		*data = n->data;
-		q->front = n->next;
+		*data = ((Node*)n)->data;
+		wt_slist_remove(queue, n);
 		free(n);
-		if (q->front == NULL)
-		{
-			q->rear = NULL;
-		}
 		r = 1;
 	}
 	else
@@ -81,11 +61,12 @@ int wt_queue_dequeue(wt_queue_t queue, size_t* data)
 int wt_queue_peek(wt_queue_t queue, size_t* data)
 {
 	int r;
+	wt_slist_t* n;
 	assert(queue && data);
-	Queue* q = queue;
-	if (q->front)
+	n = wt_slist_first(queue);
+	if (n)
 	{
-		*data = q->front->data;
+		*data = ((Node*)n)->data;
 		r = 1;
 	}
 	else
@@ -97,14 +78,11 @@ int wt_queue_peek(wt_queue_t queue, size_t* data)
 
 void wt_queue_delete(wt_queue_t queue)
 {
-	Queue* q;
-	Node* n;
+	wt_slist_t* q, * n;
 	assert(queue);
 	q = queue;
-	while (q->front)
+	wt_slist_for_each(n, q);
 	{
-		n = q->front;
-		q->front = n->next;
 		free(n);
 	}
 	free(queue);

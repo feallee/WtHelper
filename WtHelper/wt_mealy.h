@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef __WT_MEALY_H__
-#define __WT_MEALY_H__
+#ifndef __WT_MEALY_H_
+#define __WT_MEALY_H_
 
  /// @brief 未知状态。注意：该状态不允许在状态转换表中使用。
 #define WT_MEALY_STATE_UNKNOWN	(-1)
@@ -38,7 +38,7 @@ typedef struct
 	char event;
 	/// @brief 与当前状态关联次态。不允许使用MEALY_STATE_UNKNOWN。
 	char next;
-	/// @brief 与当前状态关联动作，在转换状态后调用。注意：实现动作时不允许调用下列函数：mealy_create，mealy_delete和mealy_raise。
+	/// @brief 与当前状态关联动作，在转换状态后调用。注意：实现动作时不允许调用下列函数：mealy_raise。
 	void(*action)(char from, char to, char event, size_t parameter);
 } wt_mealy_transit_t;
 
@@ -52,10 +52,6 @@ typedef void* wt_mealy_t;
 /// @param finalState 最终状态。
 /// @return 返回新创建的状态机。如果由于下列原因：
 ///		1、内存资源不足；
-///		2、参数transitCount为0；
-///		3、参数initialState为MEALY_STATE_UNKNOWN；
-///		4、参数finalState为MEALY_STATE_UNKNOWN；
-///		5、参数transitTable为NULL。
 ///		会导致创建失败，返回NULL。
 wt_mealy_t wt_mealy_create(const wt_mealy_transit_t* transitTable, unsigned short transitCount, char initialState, char finalState);
 
