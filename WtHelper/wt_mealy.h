@@ -39,7 +39,7 @@ typedef struct
 	/// @brief 与当前状态关联次态。不允许使用MEALY_STATE_UNKNOWN。
 	char next;
 	/// @brief 与当前状态关联动作，在转换状态后调用。注意：实现动作时不允许调用下列函数：mealy_create，mealy_delete和mealy_raise。
-	void(*action)(void* parameter);
+	void(*action)(char from, char to, char event, size_t parameter);
 } wt_mealy_transit_t;
 
 /// @brief 状态机控制块。
@@ -64,7 +64,7 @@ wt_mealy_t wt_mealy_create(const wt_mealy_transit_t* transitTable, unsigned shor
 /// @param event 事件。
 /// @param parameter 事件关联参数。
 /// @return 返回状态转换后的状态，可以与finalState比较，判断状态机是否进入了停机状态。如果返回MEALY_STATE_UNKNOWN表示当前状态不支持该事件。
-char wt_mealy_raise(wt_mealy_t mealy, char event, void* parameter);
+char wt_mealy_raise(wt_mealy_t mealy, char event, size_t parameter);
 
 /// @brief 获取状态机的当前状态。
 /// @param 状态机。

@@ -14,11 +14,6 @@ typedef struct
 	Node* rear;
 } Queue;
 
-static int isempty(Queue* queue)
-{
-	return queue->front == NULL;
-}
-
 wt_queue_t wt_queue_create(void)
 {
 	Queue* q = malloc(sizeof(Queue));
@@ -37,9 +32,9 @@ int wt_queue_enqueue(wt_queue_t queue, size_t data)
 	n = malloc(sizeof(Node));
 	if (n)
 	{
-		n->data = data;
-		n->next = NULL;
 		Queue* q = queue;
+		n->data = data;
+		n->next = NULL;		
 		if (q->front)
 		{
 			q->rear->next = n;
@@ -64,7 +59,6 @@ int wt_queue_dequeue(wt_queue_t queue, size_t* data)
 	int r;
 	assert(queue && data);
 	Queue* q = queue;
-
 	if (q->front)
 	{
 		Node* n = q->front;
