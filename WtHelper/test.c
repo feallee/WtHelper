@@ -83,23 +83,32 @@ static const wt_mealy_transit_t trans[] =
 
 void mealy_test(void)
 {
-	wt_mealy_t m = wt_mealy_create(
-		trans,
-		sizeof(trans) / sizeof(trans[0]),
-		MEALY_STATE_STOP,
-		MEALY_STATE_FINAL);
+	wt_mealy_t m = wt_mealy_create();
+	if (m)
+	{
+		printf("mealy vsersion:%s\n", wt_mealy_getversion());
+		wt_mealy_start(m,
+			trans,
+			sizeof(trans) / sizeof(trans[0]),
+			MEALY_STATE_STOP,
+			MEALY_STATE_FINAL);
 
-	printf("Current:%d\n", wt_mealy_getcurrent(m));
-	wt_mealy_raise(m, MEALY_EVENT_PLAY_PAUSE, 0);
-	wt_mealy_raise(m, MEALY_EVENT_PLAY_PAUSE, 0);
-	wt_mealy_raise(m, MEALY_EVENT_STOP, 0);
+		printf("Current:%d\n", wt_mealy_getcurrent(m));
+		wt_mealy_raise(m, MEALY_EVENT_PLAY_PAUSE, 0);
+		wt_mealy_raise(m, MEALY_EVENT_PLAY_PAUSE, 0);
+		wt_mealy_raise(m, MEALY_EVENT_STOP, 0);
 
-	wt_mealy_raise(m, MEALY_EVENT_PLAY_PAUSE, 0);
-	wt_mealy_raise(m, MEALY_EVENT_PLAY_PAUSE, 0);
-	wt_mealy_raise(m, MEALY_EVENT_PLAY_PAUSE, 0);
-	wt_mealy_raise(m, MEALY_EVENT_STOP, 0);
-	printf("Current:%d\n\n", wt_mealy_getcurrent(m));
-	wt_mealy_delete(m);
+		wt_mealy_raise(m, MEALY_EVENT_PLAY_PAUSE, 0);
+		wt_mealy_raise(m, MEALY_EVENT_PLAY_PAUSE, 0);
+		wt_mealy_raise(m, MEALY_EVENT_PLAY_PAUSE, 0);
+		wt_mealy_raise(m, MEALY_EVENT_STOP, 0);
+		printf("Current:%d\n\n", wt_mealy_getcurrent(m));
+		wt_mealy_delete(m);
+	}
+	else
+	{
+		printf("Error\n");
+	}
 }
 
 
@@ -108,8 +117,8 @@ static wt_timer_t timer1;
 void timer1_timed(void)
 {
 	static int count = 0;
-	printf("%d Timed!\n", count++);	
-	wt_timer_reset(timer1);
+	printf("%d Timed!\n", count++);
+	wt_timer_reset(timer1);//表示要不要继续
 }
 void timer_test(void)
 {
@@ -118,7 +127,7 @@ void timer_test(void)
 	while (i--)
 	{
 		wt_timer_refresh();//Simulate hardware timer interrupt call
-		wt_timer_dowork();		
+		wt_timer_dowork();
 	}
 	wt_timer_delete(timer1);
 

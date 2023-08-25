@@ -15,7 +15,8 @@ static wt_slist_t Container = { NULL };
 wt_timer_t wt_timer_create(unsigned int interval, void(*timed)(void))
 {
 	Timer* t;
-	assert(timed && interval);
+	assert(timed);
+	assert(interval);
 	t = malloc(sizeof(Timer));
 	if (t)
 	{
@@ -49,7 +50,7 @@ void wt_timer_dowork(void)
 	{
 		t = (Timer*)l;
 		if (t->count == 1)
-		{			
+		{
 			t->count = 0;
 			t->timed();
 		}
