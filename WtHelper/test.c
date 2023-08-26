@@ -72,7 +72,7 @@ static void resume_mp3(char from, char to, char event, size_t parameter)
 	printf("From:%d,Event:%d,Parameter:%zd ->To:%d, Resume mp3\n", from, event, parameter, to);
 }
 
-static const wt_mealy_transit_t trans[] =
+static const wt_mealy_transition_t trans[] =
 {
 	{MEALY_STATE_STOP,MEALY_EVENT_PLAY_PAUSE,MEALY_STATE_PLAY,play_mp3},
 	{MEALY_STATE_PLAY,MEALY_EVENT_STOP,MEALY_STATE_STOP,stop_mp3},
@@ -81,19 +81,24 @@ static const wt_mealy_transit_t trans[] =
 	{MEALY_STATE_PAUSE,MEALY_EVENT_STOP,MEALY_STATE_STOP,stop_mp3},
 };
 
+static void final_callback(void)
+{
+}
+
 void mealy_test(void)
 {
 	wt_mealy_t m = wt_mealy_create();
 	if (m)
 	{
-		printf("mealy vsersion:%s\n", wt_mealy_getversion());
+		printf("mealy vsersion:%s\n", wt_mealy_get_version());
+		wt_mealy_set_final(m, final_callback);
 		wt_mealy_start(m,
 			trans,
 			sizeof(trans) / sizeof(trans[0]),
 			MEALY_STATE_STOP,
 			MEALY_STATE_FINAL);
 
-		printf("Current:%d\n", wt_mealy_getcurrent(m));
+		printf("Current:%d\n", wt_mealy_get_current(m));
 		wt_mealy_raise(m, MEALY_EVENT_PLAY_PAUSE, 0);
 		wt_mealy_raise(m, MEALY_EVENT_PLAY_PAUSE, 0);
 		wt_mealy_raise(m, MEALY_EVENT_STOP, 0);
@@ -102,7 +107,7 @@ void mealy_test(void)
 		wt_mealy_raise(m, MEALY_EVENT_PLAY_PAUSE, 0);
 		wt_mealy_raise(m, MEALY_EVENT_PLAY_PAUSE, 0);
 		wt_mealy_raise(m, MEALY_EVENT_STOP, 0);
-		printf("Current:%d\n\n", wt_mealy_getcurrent(m));
+		printf("Current:%d\n\n", wt_mealy_get_current(m));
 		wt_mealy_delete(m);
 	}
 	else

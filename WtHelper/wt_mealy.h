@@ -3,8 +3,8 @@
  *
  * 本模块实现了一种简单的有限状态机，非常适用于嵌入式应用。工作流程如下：
  *	1、当前某个已定义的事件发生时，用户需要把事件和关联参数，调用函数wt_mealy_raise传递给状态机。
- *	2、状态机接收后会根据状态转换表进行状态转换并执行关联的动作函数。
- *	3、在执行状态转换时，如果当前状态关联的次态是最终状态的则停机。
+ *	2、状态机接收后会根据状态转换表进行状态转换并执行关联的动作。
+ *	3、在执行状态转换时，如果当前状态关联的次态是最终状态，则状态机不再响应事件。
  *
  * 模块规格
  * 状态机数量：无限（受内存资源限制）。
@@ -12,7 +12,6 @@
  * 事件容量：256条/状态。
  * 转换表：1张/状态机。
  * 转换表容量：65535条/转换表。
- * 停机：支持。
  * 共用转换表：支持。
  * 切换转换表：支持。
  *
@@ -46,7 +45,7 @@ typedef struct
 	/// 1、实现动作时禁止调用下列函数：wt_mealy_raise。
 	/// 2、如果不需要动作使用NULL代替。
 	void(*action)(char from, char to, char event, size_t parameter);
-} wt_mealy_transit_t;
+} wt_mealy_transition_t;
 
 /// @brief 状态机控制块。
 typedef void* wt_mealy_t;
@@ -61,25 +60,30 @@ wt_mealy_t wt_mealy_create(void);
 /// @param transitCount 状态转换表数量。
 /// @param initialState 起始状态。
 /// @param finalState 最终状态。
-void wt_mealy_start(wt_mealy_t mealy, const wt_mealy_transit_t* transitTable, unsigned short transitCount, char initialState, char finalState);
+void wt_mealy_start(wt_mealy_t mealy, const wt_mealy_transition_t* transitTable, unsigned short transitCount, char initialState, char finalState);
 
 /// @brief 向状态机引发事件并返回状态转换后的状态。如果转换失败，状态会保持在当前状态。
 /// @param mealy 状态机。
 /// @param event 事件。
 /// @param parameter 事件关联参数。
-/// @return 返回状态转换后的状态，可以与finalState比较，判断状态机是否进入了停机状态。如果返回MEALY_STATE_UNKNOWN表示当前状态不支持该事件。
+/// @return 返回状态转换后的状态，可以与finalState比较，判断状态机是否进入了最终状态。如果返回MEALY_STATE_UNKNOWN表示当前状态不支持该事件。
 char wt_mealy_raise(wt_mealy_t mealy, char event, size_t parameter);
 
 /// @brief 获取状态机的当前状态。
-/// @param 状态机。
-/// @return 返回状态机的当前状态，可以与finalState比较，判断状态机是否进入了停机状态。
-char wt_mealy_getcurrent(wt_mealy_t mealy);
+/// @param mealy 状态机。
+/// @return 返回状态机的当前状态，可以与finalState比较，判断状态机是否进入了最终状态。
+char wt_mealy_get_current(wt_mealy_t mealy);
 
 /// @brief 删除并释放状态机所占用资源。
-/// @param 状态机。
+/// @param mealy 状态机。
 void wt_mealy_delete(wt_mealy_t mealy);
 
+/// @brief 设置状态机进入最终状态时的回调函数。
+/// @param mealy 状态机。
+/// @param callback 回调函数。
+void wt_mealy_set_final(wt_mealy_t mealy, void(*callback)(void));
+
 /// @brief 获取状态机的当前版本号。
-char* wt_mealy_getversion(void);
+char* wt_mealy_get_version(void);
 #endif // !__MEALY_H__
 
