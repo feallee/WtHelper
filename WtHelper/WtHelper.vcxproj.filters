@@ -30,6 +30,12 @@
     <ClInclude Include="wt_slist.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="wt_check.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="wt_convert.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="wt_mealy.c">
@@ -45,6 +51,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="wt_timer.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="wt_check.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="wt_convert.c">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
