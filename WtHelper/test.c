@@ -20,26 +20,26 @@ static void queue_test(void)
 #include "wt_buffer.h"
 static void buffer_test(void)
 {
-	char c;
-	wt_buffer_t b = wt_buffer_create(8);
-	wt_buffer_putchar(b, 'A');
-	wt_buffer_putchar(b, 'B');
-	wt_buffer_putchar(b, 'C');
-	wt_buffer_putchar(b, 'D');
-	wt_buffer_putchar(b, 'E');
-	wt_buffer_putchar(b, 'F');
-	wt_buffer_putchar(b, 'G');
-	printf("\nBuffer state:%d\n", wt_buffer_getsatate(b));
-	wt_buffer_putchar(b, '8');
-	printf("Buffer state:%d\n", wt_buffer_getsatate(b));
-	wt_buffer_getchar(b, &c); printf("Get char:%c\n", c);
-	wt_buffer_getchar(b, &c); printf("Get char:%c\n", c);
-	wt_buffer_getchar(b, &c); printf("Get char:%c\n", c);
-	wt_buffer_getchar(b, &c); printf("Get char:%c\n", c);
-	printf("Buffer state:%d\n", wt_buffer_getsatate(b));
-	wt_buffer_clear(b);
-	printf("Buffer state:%d\n\n", wt_buffer_getsatate(b));
-	wt_buffer_delete(b);
+	uint8_t c = 0, pool[8];
+	wt_buffer_type b;
+	wt_buffer_init(&b, pool, 8);
+	wt_buffer_write_byte(&b, 'A');
+	wt_buffer_write_byte(&b, 'B');
+	wt_buffer_write_byte(&b, 'C');
+	wt_buffer_write_byte(&b, 'D');
+	wt_buffer_write_byte(&b, 'E');
+	wt_buffer_write_byte(&b, 'F');
+	wt_buffer_write_byte(&b, 'G');
+	wt_buffer_write_byte(&b, '8');
+
+	wt_buffer_read_byte(&b, &c); printf("Read byte:%c\n", c);
+	wt_buffer_read_byte(&b, &c); printf("Read byte:%c\n", c);
+	wt_buffer_read_byte(&b, &c); printf("Read byte:%c\n", c);
+	wt_buffer_read_byte(&b, &c); printf("Read byte:%c\n", c);
+	wt_buffer_read_byte(&b, &c); printf("Read byte:%c\n", c);
+	wt_buffer_read_byte(&b, &c); printf("Read byte:%c\n", c);
+	wt_buffer_read_byte(&b, &c); printf("Read byte:%c\n", c);
+	wt_buffer_read_byte(&b, &c); printf("Read byte:%c\n", c);
 }
 
 
@@ -72,7 +72,7 @@ static void resume_mp3(char from, char to, char event, size_t parameter)
 	printf("From:%d,Event:%d,Parameter:%zd ->To:%d, Resume mp3\n", from, event, parameter, to);
 }
 
-static const wt_mealy_transition_t trans[] =
+static const wt_mealy_transition_type trans[] =
 {
 	{MEALY_STATE_STOP,MEALY_EVENT_PLAY_PAUSE,MEALY_STATE_PLAY,play_mp3},
 	{MEALY_STATE_PLAY,MEALY_EVENT_STOP,MEALY_STATE_STOP,stop_mp3},
@@ -87,33 +87,19 @@ static void final_callback(void)
 
 void mealy_test(void)
 {
-	wt_mealy_t m = wt_mealy_create();
-	if (m)
-	{
-		printf("mealy vsersion:%s\n", wt_mealy_get_version());
-		wt_mealy_set_final(m, final_callback);
-		wt_mealy_start(m,
-			trans,
-			sizeof(trans) / sizeof(trans[0]),
-			MEALY_STATE_STOP,
-			MEALY_STATE_FINAL);
+	wt_mealy_machine_type m;
+	wt_mealy_init(&m, trans, sizeof(trans) / sizeof(trans[0]), MEALY_STATE_STOP, MEALY_STATE_FINAL);
 
-		printf("Current:%d\n", wt_mealy_get_current(m));
-		wt_mealy_raise(m, MEALY_EVENT_PLAY_PAUSE, 0);
-		wt_mealy_raise(m, MEALY_EVENT_PLAY_PAUSE, 0);
-		wt_mealy_raise(m, MEALY_EVENT_STOP, 0);
+	printf("Current:%d\n", wt_mealy_getstate(&m));
+	wt_mealy_raise(&m, MEALY_EVENT_PLAY_PAUSE, 0);
+	wt_mealy_raise(&m, MEALY_EVENT_PLAY_PAUSE, 0);
+	wt_mealy_raise(&m, MEALY_EVENT_STOP, 0);
 
-		wt_mealy_raise(m, MEALY_EVENT_PLAY_PAUSE, 0);
-		wt_mealy_raise(m, MEALY_EVENT_PLAY_PAUSE, 0);
-		wt_mealy_raise(m, MEALY_EVENT_PLAY_PAUSE, 0);
-		wt_mealy_raise(m, MEALY_EVENT_STOP, 0);
-		printf("Current:%d\n\n", wt_mealy_get_current(m));
-		wt_mealy_delete(m);
-	}
-	else
-	{
-		printf("Error\n");
-	}
+	wt_mealy_raise(&m, MEALY_EVENT_PLAY_PAUSE, 0);
+	wt_mealy_raise(&m, MEALY_EVENT_PLAY_PAUSE, 0);
+	wt_mealy_raise(&m, MEALY_EVENT_PLAY_PAUSE, 0);
+	wt_mealy_raise(&m, MEALY_EVENT_STOP, 0);
+	printf("Current:%d\n\n", wt_mealy_getstate(&m));
 }
 
 

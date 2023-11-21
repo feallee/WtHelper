@@ -1,96 +1,43 @@
-#include <stdlib.h>
-#include <assert.h>
 #include "wt_mealy.h"
 
-typedef struct
+void wt_mealy_init(wt_mealy_machine_type* machine, const wt_mealy_transition_type* table, uint16_t count, char initial, char final)
 {
-	const wt_mealy_transition_t* transitTable;
-	unsigned short transitCount;
-	char currentState;
-	char finalState;
-	void (*callback)(wt_mealy_t mealy);
-}Machine;
-
-wt_mealy_t wt_mealy_create(void)
-{
-	return calloc(1, sizeof(Machine));
+	machine->table = table;
+	machine->count = count;
+	machine->current = initial;
+	machine->final = final;
 }
 
-void wt_mealy_start(wt_mealy_t mealy, const wt_mealy_transition_t* transitTable, unsigned short transitCount, char initialState, char finalState)
+bool wt_mealy_raise(wt_mealy_machine_type* machine, char event, void* parameter)
 {
-	Machine* m;
-	assert(mealy);
-	assert(transitTable);
-	assert(transitCount);
-	assert(initialState != WT_MEALY_STATE_UNKNOWN);
-	assert(finalState != WT_MEALY_STATE_UNKNOWN);
-	m = mealy;
-	m->transitTable = transitTable;
-	m->transitCount = transitCount;
-	m->currentState = initialState;
-	m->finalState = finalState;
-	m->callback = NULL;
-}
-
-char wt_mealy_raise(wt_mealy_t mealy, char event, size_t parameter)
-{
-	char to;
-	Machine* m;
-	assert(mealy);
-	assert(event != WT_MEALY_STATE_UNKNOWN);
-	m = mealy;
-	assert(m->transitTable);
-	to = WT_MEALY_STATE_UNKNOWN;
-	if (m->currentState != m->finalState)
+	bool r = false;
+	if (machine->current != machine->final)
 	{
-		unsigned short cnt = m->transitCount;
-		const wt_mealy_transition_t* tran = m->transitTable;
-		while (cnt--)
+		for (uint16_t i = 0; i < machine->count; i++)
 		{
-			if ((tran->current == m->currentState) &&
-				(tran->event == event))
+			wt_mealy_transition_type* t = (&machine->table[i]);
+			char from = machine->current;
+			if (t->state == machine->current && t->event == event)
 			{
-				char from = m->currentState;
-				m->currentState = to = tran->next;
-				if (tran->action)
+				machine->current = t->next;
+				if (t->action)
 				{
-					tran->action(from, to, event, parameter);
+					t->action(from, t->next, event, parameter);
 				}
-				if (to == m->finalState)
-				{
-					if (m->callback)
-					{
-						m->callback(m);
-					}
-				}
+				r = true;
 				break;
 			}
-			tran++;
 		}
 	}
-	return to;
+	return r;
 }
 
-char wt_mealy_get_current(wt_mealy_t mealy)
+char wt_mealy_getstate(wt_mealy_machine_type* machine)
 {
-	assert(mealy);
-	return ((Machine*)mealy)->currentState;
+	return machine->current;
 }
 
-void wt_mealy_delete(wt_mealy_t mealy)
+bool wt_mealy_isfinal(wt_mealy_machine_type* machine)
 {
-	free(mealy);
-}
-
-void wt_mealy_set_final(wt_mealy_t mealy, void(*callback)(void))
-{
-	Machine* m;
-	assert(mealy);
-	m = mealy;
-	m->callback = callback;
-}
-
-char* wt_mealy_get_version(void)
-{
-	return "1.0";
+	return machine->current == machine->final;
 }

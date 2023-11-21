@@ -1,136 +1,52 @@
-#include <stdlib.h>
-#include <assert.h>
 #include "wt_buffer.h"
 
-typedef struct
+void wt_buffer_init(wt_buffer_type* buffer, uint8_t* pool, int32_t capacity)
 {
-	unsigned char* buffer;
-	unsigned short read_mirror : 1;
-	unsigned short read_index : 15;
-	unsigned short write_mirror : 1;
-	unsigned short write_index : 15;
-	unsigned short capacity;
-}Buffer;
-
-wt_buffer_t wt_buffer_create(unsigned short capacity)
-{
-	Buffer* r;
-	assert(capacity > 0 && capacity <= 32768);
-	r = malloc(sizeof(Buffer));
-	if (r)
-	{
-		r->buffer = malloc(capacity);
-		if (r->buffer)
-		{
-			r->read_index = 0;
-			r->read_mirror = 0;
-			r->write_index = 0;
-			r->write_mirror = 0;
-			r->capacity = capacity;
-		}
-		else
-		{
-			free(r);
-			r = NULL;
-		}
-	}
-	return r;
+	buffer->capacity = capacity;
+	buffer->pool = pool;
+	buffer->read_mirror = buffer->read_index = buffer->write_mirror = buffer->write_index = 0;
 }
 
-void wt_buffer_delete(wt_buffer_t buffer)
+int32_t wt_buffer_write_byte(wt_buffer_type* buffer, const uint8_t segment)
 {
-	Buffer* b;
-	assert(buffer);
-	b = buffer;
-	free(b->buffer);
-	free(b);
-}
-
-wt_buffer_state wt_buffer_getsatate(wt_buffer_t buffer)
-{
-	wt_buffer_state r;
-	Buffer* b;
-	assert(buffer);
-	b = buffer;
-	if (b->read_index == b->write_index)
+	if (buffer->write_index == buffer->read_index && buffer->write_mirror != buffer->read_mirror)
 	{
-		if (b->read_mirror == b->write_mirror)
-		{
-			r = WT_BUFFER_EMPTY;
-		}
-		else
-		{
-			r = WT_BUFFER_FULL;
-		}
+		return 0;
 	}
 	else
 	{
-		r = WT_BUFFER_HALFFULL;
-	}
-	return r;
-}
-
-int wt_buffer_putchar(wt_buffer_t buffer, unsigned char data)
-{
-	int r;
-	Buffer* b;
-	assert(buffer);
-	b = buffer;
-	if (wt_buffer_getsatate(buffer) == WT_BUFFER_FULL)
-	{
-		r = 0;
-	}
-	else
-	{
-		b->buffer[b->write_index] = data;
-		if (b->write_index == b->capacity - 1)
+		buffer->pool[buffer->write_index] = segment;
+		if (buffer->write_index == buffer->capacity - 1)
 		{
-			b->write_mirror = ~b->write_mirror;
-			b->write_index = 0;
+			buffer->write_index = 0;
+			buffer->write_mirror = ~buffer->write_mirror;
 		}
 		else
 		{
-			b->write_index++;
+			buffer->write_index++;
 		}
-		r = 1;
+		return 1;
 	}
-	return r;
 }
 
-int wt_buffer_getchar(wt_buffer_t buffer, unsigned char* data)
+int32_t wt_buffer_read_byte(wt_buffer_type* buffer, uint8_t* segment)
 {
-	int r;
-	Buffer* b;
-	assert(buffer);
-	b = buffer;
-	if (wt_buffer_getsatate(buffer) == WT_BUFFER_EMPTY)
+	if (buffer->write_index == buffer->read_index && buffer->write_mirror == buffer->read_mirror)
 	{
-		r = 0;
+		return 0;
 	}
 	else
 	{
-		*data = b->buffer[b->read_index];
-		if (b->read_index == b->capacity - 1)
+		*segment = buffer->pool[buffer->read_index];
+		if (buffer->read_index == buffer->capacity - 1)
 		{
-			b->read_mirror = ~b->read_mirror;
-			b->read_index = 0;
+			buffer->read_index = 0;
+			buffer->read_mirror = ~buffer->read_mirror;
 		}
 		else
 		{
-			b->read_index++;
+			buffer->read_index++;
 		}
-		r = 1;
+		return 1;
 	}
-	return r;
-}
-
-void wt_buffer_clear(wt_buffer_t buffer)
-{
-	Buffer* b;
-	assert(buffer);
-	b = buffer;
-	b->read_mirror = 0;
-	b->read_index = 0;
-	b->write_mirror = 0;
-	b->write_index = 0;
 }
