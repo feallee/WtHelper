@@ -18,7 +18,7 @@
 #define __WT_CONVERT_H_
 #include <stdint.h>
 
-uint32_t wt_convert_scanformat(char* buffer, uint32_t count, char separator);
+uint32_t wt_convert_scanformat(char* buffer, uint32_t count, const char* separator);
 
 
 #endif

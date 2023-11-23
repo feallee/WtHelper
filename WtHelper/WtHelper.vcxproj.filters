@@ -30,7 +30,7 @@
     <ClInclude Include="wt_slist.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="wt_check.h">
+    <ClInclude Include="wt_checker.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="wt_convert.h">
@@ -53,7 +53,7 @@
     <ClCompile Include="wt_timer.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="wt_check.c">
+    <ClCompile Include="wt_checker.c">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="wt_convert.c">
