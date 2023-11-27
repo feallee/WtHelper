@@ -129,7 +129,7 @@
   <ItemGroup>
     <ClInclude Include="wt_buffer.h" />
     <ClInclude Include="wt_checker.h" />
-    <ClInclude Include="wt_convert.h" />
+    <ClInclude Include="wt_converter.h" />
     <ClInclude Include="wt_mealy.h" />
     <ClInclude Include="wt_queue.h" />
     <ClInclude Include="wt_slist.h" />
@@ -138,7 +138,7 @@
   <ItemGroup>
     <ClCompile Include="test.c" />
     <ClCompile Include="wt_checker.c" />
-    <ClCompile Include="wt_convert.c" />
+    <ClCompile Include="wt_converter.c" />
     <ClCompile Include="wt_mealy.c" />
     <ClCompile Include="wt_buffer.c" />
     <ClCompile Include="wt_queue.c" />

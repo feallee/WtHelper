@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 #include "wt_queue.h"
 static void queue_test(void)
@@ -124,11 +125,30 @@ void timer_test(void)
 
 }
 
+#include "wt_converter.h"
+void convert_test(void)
+{
+	char b[513];
+	uint32_t cnt = 256;
+	for (size_t i = 0; i < cnt; i++)
+	{
+		b[i] = i;
+	}
+	cnt = wt_converter_b2hs(b, cnt);
+	b[cnt] = 0;
+	printf("%d:%s\n", cnt, b);
+	b[5] = 'h';
+	cnt = wt_converter_hs2b(b, cnt);
+	b[cnt] = 0;
+	printf("%d:%s\n", cnt, b);
+}
+
 int main(void)
 {
-	queue_test();
+	/*queue_test();
 	buffer_test();
 	mealy_test();
-	timer_test();
+	timer_test();*/
+	convert_test();
 	return 0;
 }
